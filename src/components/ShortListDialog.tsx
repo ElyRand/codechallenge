@@ -10,7 +10,7 @@ export default function ShortListDialog({ open, setOpen }) {
   const { shortListQuery, removeFromShortlist } = useShortlist();
 
   const shortList = shortListQuery.data;
-
+  console.log({ shortList });
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -81,7 +81,7 @@ export default function ShortListDialog({ open, setOpen }) {
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                              {shortList.map((book) => (
+                              {shortList?.map((book) => (
                                 <tr key={book.id}>
                                   <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                                     {book.title}
@@ -111,13 +111,13 @@ export default function ShortListDialog({ open, setOpen }) {
                     </div>
                   </div>
                 )}
-                <div className="mt-5 sm:mt-4 sm:flex sm:flex-row">
+                <div className="mt-5 gap-x-2 sm:mt-4 sm:flex sm:flex-row">
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                     onClick={() => setOpen(false)}
                   >
-                    Save
+                    Check for availability
                   </button>
                   <button
                     type="button"

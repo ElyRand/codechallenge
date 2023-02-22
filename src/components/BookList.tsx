@@ -1,6 +1,8 @@
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { Prisma } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import useShortlist from "~/hooks/useShortlist";
 
 interface BookListProps {
@@ -10,11 +12,15 @@ interface BookListProps {
 
 const BookList = ({ books, prompt }: BookListProps) => {
   const { addToShortlistMutation, shortListQuery } = useShortlist();
-
+  const { status } = useSession();
   const shortList = shortListQuery.data;
+  const router = useRouter();
 
   const handleAddToShortlist = async (book: GutenDexBook) => {
-    console.log("here");
+    if (status === "unauthenticated") {
+      router.push("/auth/signin");
+    }
+
     const validatedInput = Prisma.validator<Prisma.BookCreateInput>()({
       gutenDexId: book.id,
       title: book.title,
@@ -35,7 +41,7 @@ const BookList = ({ books, prompt }: BookListProps) => {
                   <th
                     key="title"
                     scope="col"
-                    className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                    className="max-h-[300px] py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                   >
                     Title
                   </th>,
@@ -53,12 +59,7 @@ const BookList = ({ books, prompt }: BookListProps) => {
                 >
                   Lang
                 </th>
-                <th
-                  scope="col"
-                  className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                >
-                  Copyrighted
-                </th>
+
                 <th scope="col" className="relative py-3.5 pl-3 pr-6 sm:pr-0">
                   <span className="sr-only">Edit</span>
                 </th>
@@ -70,7 +71,7 @@ const BookList = ({ books, prompt }: BookListProps) => {
                   {[
                     <td
                       key={`${book.id} title ${book.title}`}
-                      className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                      className="max-w-[300px] whitespace-normal  py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
                     >
                       {shortList &&
                       shortList
@@ -95,9 +96,7 @@ const BookList = ({ books, prompt }: BookListProps) => {
                   <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                     {book?.languages?.join(", ")}
                   </td>
-                  <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                    {book.copyright ? "Yes" : "No"}
-                  </td>
+
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
                     <button
                       onClick={() => handleAddToShortlist(book)}

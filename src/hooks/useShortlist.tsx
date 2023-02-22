@@ -1,14 +1,24 @@
 import { Prisma } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const useShortlist = () => {
+  const { status } = useSession();
+
   const shortListQuery = useQuery({
     queryKey: ["shortlist"],
     queryFn: () =>
       fetch("/api/shortlist")
-        .then((res) => res.json())
-        .catch((err) => console.log(err)),
+        .then((res) => {
+          if (res.status === 401) {
+            return [];
+          }
+          if (res.ok) {
+            return res.json();
+          }
+        })
+        .catch((err) => console.log("error querying shortlist", err)),
   });
 
   const addToShortlistMutation = useMutation({

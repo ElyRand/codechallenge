@@ -1,9 +1,9 @@
-import { Book, Prisma } from "@prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { Prisma } from "@prisma/client";
 import { getServerSession, type Session } from "next-auth";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 
+import type { NextApiRequest, NextApiResponse } from "next";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
@@ -13,6 +13,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "GET":
       const shortList = await fetchShortList(session);
+      if (!shortList) {
+        return res.status(404).json({ error: "Shortlist not found" });
+      }
       return res.status(200).json(shortList.books);
 
     case "POST":
@@ -31,13 +34,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const fetchShortList = async (session: Session) => {
-  const shortList = await prisma.shortList.findUniqueOrThrow({
-    where: { userId: session.user.id },
-    include: {
-      books: true,
-    },
-  });
-  return shortList;
+  try {
+    const shortList = await prisma.shortList.findUniqueOrThrow({
+      where: { userId: session.user.id },
+      include: {
+        books: true,
+      },
+    });
+    return shortList;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 };
 
 // Add a new book to the shortlist

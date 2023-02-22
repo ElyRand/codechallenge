@@ -21,7 +21,7 @@ const Home: NextPage = () => {
   const [data, setData] = useState<GutenDexData>();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [shortlistDialogOpen, setShortListDialogOpen] = useState(true);
+  const [shortlistDialogOpen, setShortListDialogOpen] = useState(false);
   const [prompt, setPrompt] = useState<SearchPrompt>(defaultPrompt);
   const { status, data: userData } = useSession();
   console.log({ userData });
