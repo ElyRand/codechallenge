@@ -48,13 +48,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String        @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?       @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    Reservation   Reservation[]
+    ShortList     ShortList[]
 }
 
 model VerificationToken {
@@ -63,4 +65,37 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Book {
+    id          String        @id @default(cuid())
+    title       String
+    firstAuthor String
+    ShortList   ShortList?    @relation(fields: [shortListId], references: [id])
+    shortListId String?
+    gutenDexId  Int           @unique
+    Reservation Reservation[]
+
+    @@unique([title, firstAuthor])
+}
+
+model ShortList {
+    id     String @id @default(cuid())
+    books  Book[]
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @unique
+
+    @@unique([id, userId])
+}
+
+model Reservation {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    book      Book     @relation(fields: [bookId], references: [id])
+    bookId    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    start     DateTime
+    end       DateTime
 }
