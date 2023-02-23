@@ -61,22 +61,24 @@ model VerificationToken {
 }
 
 model Book {
-    id          String        @id @default(cuid())
+    id          String @id @default(cuid())
     title       String
     firstAuthor String
-    ShortList   ShortList?    @relation(fields: [shortListId], references: [id])
+
     shortListId String?
     gutenDexId  Int           @unique
     Reservation Reservation[]
+    ShortList   ShortList[]
 
     @@unique([title, firstAuthor])
 }
 
 model ShortList {
-    id     String @id @default(cuid())
+    id     String  @id @default(cuid())
+    user   User    @relation(fields: [userId], references: [id])
+    userId String  @unique
     books  Book[]
-    user   User   @relation(fields: [userId], references: [id])
-    userId String @unique
+    bookId String?
 
     @@unique([id, userId])
 }
