@@ -12,6 +12,9 @@ The user:
  - can reserve directly the book from the shortlist dialog, or check the return date
  - can check his ongoing reservations
 
+backend logic for the shortlist
+location: /src/pages/api/shortlist GET(fetch user's shortlist), POST(add a book to the shortlist), DELETE(remove a book from the shortlist)
+
 ## Backend: Local Library API
 
 location: /src/pages/api
