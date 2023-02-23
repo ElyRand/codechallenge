@@ -29,7 +29,6 @@ const Home: NextPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const launchSearch = async () => {
     setLoading(true);
-    setPage(1);
     const searchParams = new URLSearchParams();
     searchParams.append("page", page.toString());
 
@@ -48,14 +47,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     launchSearch();
   }, [page]);
-
-  const handlePreviousPage = () => {
-    setPage(page - 1);
-  };
-
-  const handleNextPage = () => {
-    setPage(page + 1);
-  };
 
   const handleShortlistOpen = async () => {
     if (status === "authenticated") {
@@ -112,6 +103,7 @@ const Home: NextPage = () => {
             setPrompt={setPrompt}
             prompt={prompt}
             launchSearch={launchSearch}
+            setPage={setPage}
           />
         </div>
         <BookList books={results} prompt={prompt} />

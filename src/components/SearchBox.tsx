@@ -57,10 +57,11 @@ const DropDownSearch = ({ setPrompt, prompt }) => {
   );
 };
 
-const SearchBox = ({ setPrompt, prompt, launchSearch }) => {
+const SearchBox = ({ setPrompt, prompt, launchSearch, setPage }) => {
   const handleKeypress = (e) => {
     // trigger search on enter key
     if (e.keyCode === 13) {
+      setPage(1);
       launchSearch();
     }
   };
@@ -92,7 +93,10 @@ const SearchBox = ({ setPrompt, prompt, launchSearch }) => {
         </div>
       </div>
       <button
-        onClick={launchSearch}
+        onClick={() => {
+          launchSearch();
+          setPage(1);
+        }}
         className="mt-2 rounded-xl bg-green-600 p-2 text-white"
       >
         Launch search
