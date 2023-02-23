@@ -27,11 +27,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await reserveBook(username, book);
       return res.status(204).end();
 
-    case "DELETE":
-      const bookIdToDelete = req.body as number;
-      await removeBookFromShortlist(session, bookIdToDelete);
-      return res.status(204).end();
-
     default:
       return res.status(405).end();
   }
