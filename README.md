@@ -1,4 +1,9 @@
 # Ely - Code Challenge
+To launch locally: 
+ - yarn install 
+ - add a .env in root folder
+ - yarn dev
+ 
 Link to live version: [here](https://elycodechallenge.vercel.app/)
 
 ## Frontend React Application
