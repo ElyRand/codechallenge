@@ -27,7 +27,7 @@ export default function Example() {
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6">
+            <div className="space-y-6">
               <div>
                 <label
                   htmlFor="email"
@@ -53,6 +53,7 @@ export default function Example() {
               <div>
                 <button
                   onClick={() => {
+                    console.log(email);
                     if (!email) return;
                     signIn("email", {
                       email,
@@ -67,7 +68,7 @@ export default function Example() {
                   Sign in / Sign up
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
