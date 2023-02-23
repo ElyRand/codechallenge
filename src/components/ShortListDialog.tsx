@@ -1,16 +1,32 @@
-import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/20/solid";
-import useShortlist from "~/hooks/useShortlist";
+import { Book } from "@prisma/client";
+import dayjs from "dayjs";
+import { Fragment, useRef, useState } from "react";
 import { ClipLoader } from "react-spinners";
+import useReservations from "~/hooks/useReservations";
+import useShortlist from "~/hooks/useShortlist";
+
+import MyReservations from "./MyReservations";
 
 export default function ShortListDialog({ open, setOpen }) {
   const cancelButtonRef = useRef(null);
   const { shortListQuery, removeFromShortlist } = useShortlist();
-
+  const { checkBooksAvailability, lastAvailabilityCheck, reserveBook } =
+    useReservations();
   const shortList = shortListQuery.data;
-  console.log({ shortList });
+
+  const handleCheckAvailability = async () => {
+    if (shortListQuery.isLoading) return;
+    console.log("checking availability", shortList);
+    await checkBooksAvailability(shortList);
+  };
+
+  const handleReserveBook = async (book: Book) => {
+    await reserveBook(book);
+    await checkBooksAvailability(shortList);
+  };
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -71,25 +87,22 @@ export default function ShortListDialog({ open, setOpen }) {
                                 <th
                                   scope="col"
                                   className="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
-                                ></th>
+                                >
+                                  Available?
+                                </th>
+
                                 <th
                                   scope="col"
                                   className="relative py-3.5 pl-3 pr-6 sm:pr-0"
                                 >
-                                  <span className="sr-only"></span>
+                                  <span className="sr-only">Available?</span>
                                 </th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                               {shortList?.map((book) => (
                                 <tr key={book.id}>
-                                  <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                    {book.title}
-                                  </td>
-                                  <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                                    {book.firstAuthor}
-                                  </td>
-                                  <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
+                                  <td className="sm:pl-0whitespace-nowrap max-w-[300px]  whitespace-normal py-4 py-4 pl-6 pl-6 pr-3 pr-3 text-sm text-sm font-medium font-medium text-gray-900 text-gray-900 sm:pl-0">
                                     <button
                                       onClick={() => {
                                         console.log("click");
@@ -100,7 +113,62 @@ export default function ShortListDialog({ open, setOpen }) {
                                       className="text-red-600 hover:text-indigo-900"
                                     >
                                       Remove
-                                    </button>
+                                    </button>{" "}
+                                    {book.title}
+                                  </td>
+                                  <td className="max-w-[300px] whitespace-normal  py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                    {book.firstAuthor}
+                                  </td>
+                                  <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
+                                    {lastAvailabilityCheck.length === 0 ? (
+                                      "?"
+                                    ) : lastAvailabilityCheck
+                                        .filter(
+                                          (book) => book.status == "available"
+                                        )
+                                        .map(
+                                          (book) =>
+                                            book.firstAuthor + book.title
+                                        )
+                                        .includes(
+                                          book.firstAuthor + book.title
+                                        ) ? (
+                                      <span>
+                                        Yes
+                                        <button
+                                          onClick={() =>
+                                            handleReserveBook(book)
+                                          }
+                                          className="ml-3 inline-block bg-green-300 p-2 text-gray-600"
+                                        >
+                                          Reserve for 2 weeks
+                                        </button>
+                                      </span>
+                                    ) : (
+                                      <span className="flex gap-x-3">
+                                        No
+                                        <span>
+                                          Available on{" "}
+                                          {new dayjs(
+                                            lastAvailabilityCheck
+                                              .filter(
+                                                (book) =>
+                                                  book.status == "unavailable"
+                                              )
+                                              .map((book) => ({
+                                                id:
+                                                  book.firstAuthor + book.title,
+                                                ...book,
+                                              }))
+                                              .find(
+                                                (book) =>
+                                                  book.id ==
+                                                  book.firstAuthor + book.title
+                                              )?.availableOn
+                                          ).format("DD/MM/YYYY")}
+                                        </span>
+                                      </span>
+                                    )}
                                   </td>
                                 </tr>
                               ))}
@@ -115,7 +183,7 @@ export default function ShortListDialog({ open, setOpen }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setOpen(false)}
+                    onClick={handleCheckAvailability}
                   >
                     Check for availability
                   </button>
@@ -128,6 +196,7 @@ export default function ShortListDialog({ open, setOpen }) {
                     Close
                   </button>
                 </div>
+                <MyReservations />
               </Dialog.Panel>
             </Transition.Child>
           </div>

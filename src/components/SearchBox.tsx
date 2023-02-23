@@ -91,6 +91,12 @@ const SearchBox = ({ setPrompt, prompt, launchSearch }) => {
           </kbd>
         </div>
       </div>
+      <button
+        onClick={launchSearch}
+        className="mt-2 rounded-xl bg-green-600 p-2 text-white"
+      >
+        Launch search
+      </button>
     </div>
   );
 };

@@ -28,8 +28,9 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  function launchSearch() {
+  const launchSearch = async () => {
     setLoading(true);
+    setPage(1);
     const searchParams = new URLSearchParams();
     searchParams.append("page", page.toString());
 
@@ -37,16 +38,18 @@ const Home: NextPage = () => {
       searchParams.append("search", prompt.value);
     }
 
-    fetch(`https://gutendex.com/books?` + searchParams.toString())
+    await fetch(`https://gutendex.com/books?` + searchParams.toString())
       .then((response) => response.json())
       .then((data) => setData(data as GutenDexData))
       .catch((error) => console.error(error));
-  }
+
+    setLoading(false);
+  };
 
   useEffect(() => {
     launchSearch();
     console.log("useEffect");
-  }, []);
+  }, [page]);
 
   const handlePreviousPage = () => {
     setPage(page - 1);
@@ -65,25 +68,20 @@ const Home: NextPage = () => {
   };
 
   if (!data) {
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-600/10">
-      <ClipLoader
-        className="h-20 w-20 border-white text-white"
-        color="white"
-        size={40}
-      />
-    </div>;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-600/10">
+        <ClipLoader className="h-20 w-20" color="black" size={40} />
+      </div>
+    );
   } else {
-    const { count, next, previous, results } = data;
+    const { count, results } = data;
 
     return (
       <div className="px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-xl font-semibold text-gray-900">Books</h1>
-            <p className="mt-2 text-sm text-gray-700">
-              A list of all the users in your account including their name,
-              title, email and role.
-            </p>
+            {loading ? <ClipLoader className="inline-block" /> : null}
           </div>
           <div className="mt-4 flex items-center gap-x-3 sm:mt-0 sm:ml-16 sm:flex-none">
             {status === "authenticated" && (
@@ -137,9 +135,15 @@ const Home: NextPage = () => {
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">{page}</span> to{" "}
-                <span className="font-medium">{results.length * page}</span> of{" "}
-                <span className="font-medium">{count}</span> results
+                Showing{" "}
+                <span className="font-medium">
+                  {(page - 1) * results.length + 1}
+                </span>{" "}
+                to{" "}
+                <span className="font-medium">
+                  {(page - 1) * results.length + 1 + results.length}
+                </span>{" "}
+                of <span className="font-medium">{count}</span> results
               </p>
             </div>
             <div>
@@ -147,61 +151,23 @@ const Home: NextPage = () => {
                 className="isolate inline-flex -space-x-px rounded-md shadow-sm"
                 aria-label="Pagination"
               >
-                <a
-                  href="#"
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                   className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20"
                 >
                   <span className="sr-only">Previous</span>
                   <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                </a>
-                {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
-                <a
-                  href="#"
-                  aria-current="page"
-                  className="relative z-10 inline-flex items-center border border-indigo-500 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 focus:z-20"
-                >
-                  1
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20"
-                >
-                  2
-                </a>
-                <a
-                  href="#"
-                  className="relative hidden items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 md:inline-flex"
-                >
-                  3
-                </a>
-                <span className="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700">
-                  ...
-                </span>
-                <a
-                  href="#"
-                  className="relative hidden items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 md:inline-flex"
-                >
-                  8
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20"
-                >
-                  9
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20"
-                >
-                  {}
-                </a>
-                <a
-                  href="#"
+                </button>
+
+                <button
+                  onClick={() =>
+                    setPage((p) => Math.min(count / results.length, p + 1))
+                  }
                   className="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20"
                 >
                   <span className="sr-only">Next</span>
                   <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                </a>
+                </button>
               </nav>
             </div>
           </div>

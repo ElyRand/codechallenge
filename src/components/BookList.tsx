@@ -88,7 +88,7 @@ const BookList = ({ books, prompt }: BookListProps) => {
                     </td>,
                     <td
                       key={`${book.id} authors ${book.title}`}
-                      className="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
+                      className="max-w-[300px] whitespace-normal  py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
                     >
                       {book.authors.map((author) => author.name).join(", ")}
                     </td>,

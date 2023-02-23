@@ -90,4 +90,6 @@ model Reservation {
     username  String
     start     DateTime
     end       DateTime
+
+    @@index([bookId])
 }
