@@ -24,12 +24,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     case "POST":
       const { username, book } = req.body as { username: string; book: Book };
-      console.log({ book });
       await reserveBook(username, book);
       return res.status(204).end();
 
     case "DELETE":
-      console.log("delete");
       const bookIdToDelete = req.body as number;
       await removeBookFromShortlist(session, bookIdToDelete);
       return res.status(204).end();
@@ -98,7 +96,6 @@ const reserveBook = async (username: string, book: Prisma.BookCreateInput) => {
       },
     });
   } catch (e) {
-    console.log(e);
     return null;
   }
 };

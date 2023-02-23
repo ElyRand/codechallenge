@@ -9,7 +9,6 @@ const MyReservations = () => {
     void fetchMyReservations();
   }, []);
 
-  console.log({ myReservations });
   return (
     <>
       <h2 className="mt-10 flex items-center gap-x-3 text-2xl">

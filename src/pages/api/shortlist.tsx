@@ -26,7 +26,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(204).end();
 
     case "DELETE":
-      console.log("delete");
       const bookIdToDelete = req.body as number;
       await removeBookFromShortlist(session, bookIdToDelete);
       return res.status(204).end();
@@ -53,7 +52,6 @@ const addBookToShortlist = async (
   session: Session,
   book: Prisma.BookCreateInput
 ) => {
-  console.log({ session });
   const req = await prisma.shortList.upsert({
     where: { userId: session.user.id },
     create: {
@@ -74,8 +72,6 @@ const addBookToShortlist = async (
       },
     },
   });
-
-  console.log({ req });
 };
 const removeBookFromShortlist = async (
   session: Session,

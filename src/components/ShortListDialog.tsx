@@ -18,7 +18,6 @@ export default function ShortListDialog({ open, setOpen }) {
 
   const handleCheckAvailability = async () => {
     if (shortListQuery.isLoading) return;
-    console.log("checking availability", shortList);
     await checkBooksAvailability(shortList);
   };
 
@@ -105,7 +104,6 @@ export default function ShortListDialog({ open, setOpen }) {
                                   <td className="sm:pl-0whitespace-nowrap max-w-[300px]  whitespace-normal py-4 py-4 pl-6 pl-6 pr-3 pr-3 text-sm text-sm font-medium font-medium text-gray-900 text-gray-900 sm:pl-0">
                                     <button
                                       onClick={() => {
-                                        console.log("click");
                                         removeFromShortlist.mutate(
                                           book.gutenDexId
                                         );

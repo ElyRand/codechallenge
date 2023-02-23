@@ -28,7 +28,6 @@ const BookList = ({ books, prompt }: BookListProps) => {
     });
     await addToShortlistMutation.mutateAsync(validatedInput);
   };
-  console.log({ shortList });
 
   return (
     <div className="mt-8 flow-root">

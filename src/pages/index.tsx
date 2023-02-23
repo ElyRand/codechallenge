@@ -24,7 +24,6 @@ const Home: NextPage = () => {
   const [shortlistDialogOpen, setShortListDialogOpen] = useState(false);
   const [prompt, setPrompt] = useState<SearchPrompt>(defaultPrompt);
   const { status, data: userData } = useSession();
-  console.log({ userData });
   const router = useRouter();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,7 +47,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     launchSearch();
-    console.log("useEffect");
   }, [page]);
 
   const handlePreviousPage = () => {
