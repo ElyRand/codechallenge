@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "~/server/db";
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "GET":
