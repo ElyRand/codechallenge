@@ -153,14 +153,15 @@ export default function ShortListDialog({ open, setOpen }) {
                                                 (book) =>
                                                   book.status == "unavailable"
                                               )
-                                              .map((book) => ({
+                                              .map((bookInList) => ({
                                                 id:
-                                                  book.firstAuthor + book.title,
-                                                ...book,
+                                                  bookInList.firstAuthor +
+                                                  bookInList.title,
+                                                ...bookInList,
                                               }))
                                               .find(
-                                                (book) =>
-                                                  book.id ==
+                                                (bookInList) =>
+                                                  bookInList.id ==
                                                   book.firstAuthor + book.title
                                               )?.availableOn
                                           ).format("DD/MM/YYYY")}
